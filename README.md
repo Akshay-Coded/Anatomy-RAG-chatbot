@@ -1,5 +1,6 @@
 <h1 align="center">🧬 Anatomical GPT</h1>
 <h3 align="center">An AI-Powered Medical Assistant Trained on Real Anatomy Textbooks</h3>
+<h3 align="center"><a href="https://anatomical-gpt.streamlit.app/">check out the project</a>a</h3>
 <p align="center">
   <i>Built using RAG + FAISS + BioBERT + Groq LLaMA3</i>
 </p>
