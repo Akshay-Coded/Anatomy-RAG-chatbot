@@ -20,7 +20,7 @@ if not groq_api_key:
 # 📦 Load FAISS Index & Embedder
 # -----------------------------
 st.title("🧠 Anatomical-GPT")
-st.markdown("All questions related human anatomy are answered with respect to famous anatomical texts")
+st.markdown("All questions related to human anatomy are answered with respect to famous anatomical texts")
 
 embedding_model = HuggingFaceEmbeddings(
     model_name="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
@@ -31,7 +31,11 @@ if not os.path.exists(faiss_path):
     st.error(f"⚠️ FAISS index not found at {faiss_path}.")
     st.stop()
 
-vectorstore = FAISS.load_local(faiss_path, embedding_model, allow_dangerous_deserialization=True)
+vectorstore = FAISS.load_local(
+    faiss_path,
+    embedding_model,
+    allow_dangerous_deserialization=True
+)
 retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
 # -----------------------------
@@ -43,6 +47,9 @@ llm = ChatGroq(
     model_name="llama-3.3-70b-versatile"
 )
 
+# -----------------------------
+# 🧠 RetrievalQA Chain
+# -----------------------------
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
     retriever=retriever,
@@ -54,13 +61,22 @@ qa_chain = RetrievalQA.from_chain_type(
 # -----------------------------
 query = st.text_input("🔍 Ask a medical or anatomy question:")
 
+# Add your custom instruction here
+base_instruction = (
+    "You are an expert medical tutor specialized in human anatomy. "
+    "Use the provided context from authoritative anatomy texts to answer and your knowledge to build a great explanation. "
+    "If the answer is not in the context, don't say you don’t know.\n\n"
+)
+
 def is_irrelevant(sources, threshold=100):
-    # Simple heuristic: if all chunks returned are < threshold in length
     return all(len(doc.page_content.strip()) < threshold for doc in sources)
 
 if query:
+    # Prepend instruction to the question
+    query_with_instruction = base_instruction + query
+
     with st.spinner("💭 Thinking..."):
-        result = qa_chain.invoke({"query": query})
+        result = qa_chain.invoke({"query": query_with_instruction})
         sources = result.get("source_documents", [])
 
         if not sources or is_irrelevant(sources):
