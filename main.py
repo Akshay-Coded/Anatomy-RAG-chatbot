@@ -23,7 +23,8 @@ st.title("🧠 Anatomical-GPT")
 st.markdown("All questions related to human anatomy are answered with respect to famous anatomical texts")
 
 embedding_model = HuggingFaceEmbeddings(
-    model_name="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
+    model_name="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb",
+    model_kwargs={"device": "cpu"}
 )
 
 faiss_path = "vectorstore/faiss_index"
