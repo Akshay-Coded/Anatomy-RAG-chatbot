@@ -65,7 +65,7 @@ query = st.text_input("🔍 Ask a medical or anatomy question:")
 base_instruction = (
     "You are an expert medical tutor specialized in human anatomy. "
     "Use the provided context from authoritative anatomy texts to answer and your knowledge to build a great explanation. "
-    "If the answer is not in the context, don't say you don’t know.\n\n"
+    "I want you to strictly answer the question without any extra header or footer words\n\n"
 )
 
 def is_irrelevant(sources, threshold=100):
